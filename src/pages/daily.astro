@@ -14,7 +14,7 @@ const messages = channel.posts;
 ---
 
 <Layout {title} {description}>
-  <div class="container mx-auto px-4 py-8 max-w-5xl">
+  <div class="container mx-auto px-4 py-8 max-w-4xl">
     <header class="mb-8 text-center">
       <h1 class="text-4xl font-bold mb-4">Daily Log</h1>
       <p class="text-base-content/70 mb-6">
@@ -24,7 +24,7 @@ const messages = channel.posts;
         href="https://t.me/saroprock"
         target="_blank"
         rel="noopener noreferrer"
-        class="btn btn-primary gap-2 pulse-button"
+        class="btn btn-primary gap-2 animate-pulse"
       >
         <Icon name="ri:telegram-line" class="w-5 h-5" />
         Visit Telegram Channel
@@ -33,239 +33,54 @@ const messages = channel.posts;
 
     <div class="divider mb-8"></div>
 
-    <div id="messages-container" class="masonry-grid">
-      {
-        messages.length > 0 ? (
-          messages.map((msg, index) => (
-            <div class="masonry-item" data-id={msg.id} style={`--delay: ${(index % 10) * 0.1}s`}>
-              <div class="card bg-base-200/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
-                <div class="card-body">
-                  <div class="flex justify-between items-start mb-2">
-                    <span class="text-sm text-base-content/60">{new Date(msg.datetime).toLocaleString()}</span>
-                    <a
-                      href={`https://t.me/saroprock/${msg.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="btn btn-ghost btn-xs"
-                      aria-label="View on Telegram"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      >
-                        <path d="M15 3h6v6" />
-                        <path d="M10 14L21 3" />
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                      </svg>
-                    </a>
-                  </div>
-                  <div class="prose max-w-none" set:html={msg.content} />
-                </div>
+    <div id="messages-container">
+      {messages.length > 0 ? (
+        messages.map((msg) => (
+          <div class="card bg-base-200/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 mb-6 last:mb-0" data-id={msg.id}>
+            <div class="card-body">
+              <div class="flex justify-between items-start mb-2">
+                <span class="text-sm text-base-content/60">{new Date(msg.datetime).toLocaleString()}</span>
+                <a
+                  href={`https://t.me/saroprock/${msg.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn btn-ghost btn-xs"
+                  aria-label="View on Telegram"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h6v6"></path>
+                    <path d="M10 14L21 3"></path>
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  </svg>
+                </a>
               </div>
+              <div class="prose prose-sm max-w-none" set:html={msg.content}></div>
             </div>
-          ))
-        ) : (
-          <div class="loading-container flex justify-center py-8 col-span-full">
-            <span class="loading loading-spinner loading-lg text-primary" />
           </div>
-        )
-      }
+        ))
+      ) : (
+        <div class="loading-container flex justify-center py-8">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+      )}
     </div>
   </div>
 </Layout>
 
 <style>
-  /* Masonry Grid Layout */
-  .masonry-grid {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    gap: 1.5rem;
-    width: 100%;
-  }
-
-  @media (min-width: 640px) {
-    .masonry-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .masonry-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  /* Card Styling */
-  .masonry-item {
-    break-inside: avoid;
-    margin-bottom: 1.5rem;
-    opacity: 0;
-    transform: translateY(20px) scale(0.98);
-    animation: fadeInUp 0.5s ease-out forwards;
-    animation-delay: var(--delay, 0s);
-  }
-
-  .card {
-    border-radius: 1rem;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    height: 100%;
-  }
-
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  }
-
-  .card-body {
-    padding: 1.5rem;
-  }
-
-  /* Responsive Typography */
-  .prose {
-    font-size: clamp(0.875rem, 2vw, 1rem);
-    line-height: 1.6;
-  }
-
-  /* Animations */
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px) scale(0.98);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  .pulse-button {
-    animation: pulse 2s infinite;
-  }
-
   @keyframes pulse {
-    0%,
-    100% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.05);
-    }
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
   }
+  .animate-pulse { animation: pulse 2s infinite; }
 
-  /* Reduced Motion Preferences */
-  @media (prefers-reduced-motion: reduce) {
-    .masonry-item {
-      animation: none;
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-
-    .card:hover {
-      transform: none;
-    }
-
-    .pulse-button {
-      animation: none;
-    }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
+  .card { animation: fadeIn 0.3s ease-out forwards; }
 
-  /* Optimize Image Loading */
-  .prose img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 0.5rem;
-    transition: transform 0.3s ease;
-  }
-
-  /* Staggered/Offset Layout Enhancement */
-  @media (min-width: 640px) {
-    .masonry-grid {
-      margin-left: -0.75rem;
-      margin-right: -0.75rem;
-    }
-
-    .masonry-item:nth-child(even) {
-      margin-top: 2rem;
-    }
-  }
-
-  /* Ensure Consistent Spacing */
-  .card-body > * + * {
-    margin-top: 0.75rem;
-  }
-
-  /* Improve Accessibility */
-  .card:focus-within {
-    outline: 2px solid oklch(var(--p));
-    outline-offset: 2px;
+  @media (max-width: 640px) {
+    .card-body { padding: 1rem; }
   }
 </style>
-
-<script>
-  // Enhance masonry layout with JavaScript for better distribution
-  function adjustMasonryLayout() {
-    const grid = document.querySelector(".masonry-grid");
-    if (!grid) return;
-
-    // Only apply to larger screens
-    if (window.innerWidth >= 640) {
-      const items = Array.from(document.querySelectorAll(".masonry-item"));
-      const columns = window.innerWidth >= 1024 ? 3 : 2;
-
-      // Reset heights for recalculation
-      items.forEach((item) => {
-        item.style.gridRowEnd = "";
-      });
-
-      // Allow the browser to render before measuring
-      requestAnimationFrame(() => {
-        items.forEach((item) => {
-          const height = item.getBoundingClientRect().height;
-          // Set spanning based on height
-          const span = Math.ceil(height / 20); // 20px is our grid row height
-          item.style.gridRowEnd = `span ${span}`;
-        });
-      });
-    }
-  }
-
-  // Initialize and handle resize events
-  document.addEventListener("DOMContentLoaded", adjustMasonryLayout);
-  window.addEventListener("resize", adjustMasonryLayout);
-
-  // Handle dynamic content loading
-  const observer = new MutationObserver(adjustMasonryLayout);
-  observer.observe(document.getElementById("messages-container"), {
-    childList: true,
-    subtree: true,
-  });
-
-  // Handle image loading for better layout calculation
-  document.addEventListener("DOMContentLoaded", () => {
-    const images = document.querySelectorAll(".prose img");
-    let loadedImages = 0;
-
-    function imageLoaded() {
-      loadedImages++;
-      if (loadedImages === images.length) {
-        adjustMasonryLayout();
-      }
-    }
-
-    images.forEach((img) => {
-      if (img.complete) {
-        imageLoaded();
-      } else {
-        img.addEventListener("load", imageLoaded);
-        img.addEventListener("error", imageLoaded);
-      }
-    });
-  });
-</script>
