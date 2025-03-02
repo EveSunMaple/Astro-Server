@@ -1,6 +1,7 @@
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
+import vercel from "@astrojs/vercel";
 import playformCompress from "@playform/compress";
 import terser from "@rollup/plugin-terser";
 import swup from "@swup/astro";
@@ -8,7 +9,6 @@ import icon from "astro-icon";
 import { defineConfig } from "astro/config";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
-import vercel from "@astrojs/vercel";
 
 export default defineConfig({
   site: "https://www.saroprock.com",

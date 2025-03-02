@@ -19,18 +19,20 @@ if (!categoryPosts.length) {
     <h1 class="text-4xl font-bold mb-8">Category: {category}</h1>
     <section class="mb-16">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {categoryPosts.map((post) => (
-          <BlogCard
-            title={post.data.title}
-            description={post.data.description}
-            date={post.data.pubDate}
-            badges={post.data.badges}
-            categories={post.data.categories}
-            tags={post.data.tags}
-            thumbnail={post.data.featuredImage}
-            slug={post.slug}
-          />
-        ))}
+        {
+          categoryPosts.map((post) => (
+            <BlogCard
+              title={post.data.title}
+              description={post.data.description}
+              date={post.data.pubDate}
+              badges={post.data.badges}
+              categories={post.data.categories}
+              tags={post.data.tags}
+              thumbnail={post.data.featuredImage}
+              slug={post.slug}
+            />
+          ))
+        }
       </div>
     </section>
   </div>
