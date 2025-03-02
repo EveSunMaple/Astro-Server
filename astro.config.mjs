@@ -5,11 +5,10 @@ import playformCompress from "@playform/compress";
 import terser from "@rollup/plugin-terser";
 import swup from "@swup/astro";
 import icon from "astro-icon";
-import pagefind from "astro-pagefind";
 import { defineConfig } from "astro/config";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
-import vercel from "@astrojs/vercel/serverless";
+import vercel from "@astrojs/vercel";
 
 export default defineConfig({
   site: "https://www.saroprock.com",
@@ -18,7 +17,7 @@ export default defineConfig({
   integrations: [mdx(), swup(), icon(), terser({
     compress: true,
     mangle: true,
-  }), sitemap(), tailwind(), pagefind(), playformCompress()],
+  }), sitemap(), tailwind(), playformCompress()],
   markdown: {
     shikiConfig: {
       theme: "github-dark",

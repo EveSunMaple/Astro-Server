@@ -1,0 +1,17 @@
+---
+import Layout from '../../layouts/Layout.astro'; // 使用您自己的 Layout 文件路径
+import List from '../../components/List.astro';
+import { getChannelInfo } from '../../lib/telegram';
+
+const cursor = Astro.params.cursor;
+const channel = await getChannelInfo(Astro, { after: cursor });
+
+// 设置 SEO，避免搜索引擎索引分页页面
+channel.seo = {
+  noindex: true,
+};
+---
+
+<Layout title="最新消息" description="查看更新的消息">
+  <List channel={channel} before={false} />
+</Layout>

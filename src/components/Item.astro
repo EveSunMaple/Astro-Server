@@ -1,0 +1,36 @@
+---
+const { post } = Astro.props;
+---
+
+<div class="message-card">
+  <div class="message-header">
+    <span class="message-date">{new Date(post.datetime).toLocaleString()}</span>
+    <a href={`https://t.me/saroprock/${post.id}`} target="_blank" rel="noopener noreferrer">
+      在 Telegram 上查看
+    </a>
+  </div>
+  <div class="message-content" set:html={post.content}></div>
+</div>
+
+<style>
+  .message-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  .message-date {
+    font-size: 0.875rem;
+    color: #666;
+  }
+  .message-content {
+    line-height: 1.5;
+  }
+</style>
