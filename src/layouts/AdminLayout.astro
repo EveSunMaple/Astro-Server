@@ -1,0 +1,100 @@
+---
+import Layout from "./Layout.astro";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<Layout {title} {description}>
+  <div id="auth-container" class="min-h-screen flex items-center justify-center">
+    <div class="card bg-base-200/50 backdrop-blur-sm w-full max-w-md">
+      <div class="card-body">
+        <h2 class="card-title">Admin Login</h2>
+        <form id="login-form" class="space-y-4">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Username</span>
+            </label>
+            <input type="text" id="username" class="input input-bordered" required />
+          </div>
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text">Password</span>
+            </label>
+            <input type="password" id="password" class="input input-bordered" required />
+          </div>
+          <button type="submit" class="btn btn-primary w-full">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="content-container" class="hidden">
+    <slot />
+  </div>
+</Layout>
+
+<script>
+  import * as AV from "leancloud-storage";
+
+  // 初始化 LeanCloud
+  AV.init({
+    appId: import.meta.env.PUBLIC_LEANCLOUD_APP_ID,
+    appKey: import.meta.env.PUBLIC_LEANCLOUD_APP_KEY,
+    serverURL: import.meta.env.PUBLIC_LEANCLOUD_SERVER_URL,
+  });
+
+  function initAuth() {
+    const isAuthenticated = sessionStorage.getItem("admin-auth");
+    const authContainer = document.getElementById("auth-container");
+    const contentContainer = document.getElementById("content-container");
+
+    if (isAuthenticated) {
+      authContainer.classList.add("hidden");
+      contentContainer.classList.remove("hidden");
+    }
+
+    const loginForm = document.getElementById("login-form");
+    loginForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        // 查询 LeanCloud 中的 AdminUsers 表
+        const query = new AV.Query("AdminUsers");
+        query.equalTo("username", username);
+        query.equalTo("password", password);
+        const user = await query.first();
+
+        if (user) {
+          sessionStorage.setItem("admin-auth", "true");
+          authContainer.classList.add("hidden");
+          contentContainer.classList.remove("hidden");
+        } else {
+          showToast("Invalid credentials", "error");
+        }
+      } catch (error) {
+        console.error("Error during login:", error);
+        showToast("Login failed", "error");
+      }
+    });
+  }
+
+  function showToast(message, type = "success") {
+    const toast = document.createElement("div");
+    toast.className = "toast toast-bottom toast-center";
+    toast.innerHTML = `<div class="alert alert-${type}"><span>${message}</span></div>`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  document.addEventListener("DOMContentLoaded", initAuth);
+  document.addEventListener("swup:page:view", initAuth);
+  initAuth(); // 立即执行初始化
+</script>

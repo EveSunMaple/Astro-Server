@@ -1,0 +1,201 @@
+---
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import Layout from "../layouts/Layout.astro";
+import BlogCard from "../components/BlogCard.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import { Octokit } from "octokit";
+import { marked } from "marked";
+import emojiRegex from "emoji-regex";
+
+marked.setOptions({
+  gfm: true,
+});
+
+function decodeEmojis(content) {
+  const regex = emojiRegex();
+  return content.replace(regex, (match) => {
+    return `<span class="emoji">${match}</span>`;
+  });
+}
+
+// Fetch recent blog posts
+const posts = await getCollection("blog", ({ data }) => {
+  return import.meta.env.PROD ? !data.draft : true;
+});
+
+const recentPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 2);
+
+const socialLinks = [
+  {
+    name: "GitHub",
+    href: "https://github.com/EveSunMaple",
+    icon: "ri:github-line",
+  },
+  {
+    name: "BiliBili",
+    href: "https://space.bilibili.com/438392347",
+    icon: "ri:bilibili-line",
+  },
+  {
+    name: "Telegram",
+    href: "https://t.me/EveSunMaple",
+    icon: "ri:telegram-line",
+  },
+  {
+    name: "X (Twitter)",
+    href: "https://x.com/EveSunMaple",
+    icon: "ri:twitter-x-line",
+  },
+  {
+    name: "Support",
+    href: "https://afdian.com/a/saroprock",
+    icon: "ri:cup-line",
+  },
+];
+
+// Fetch GitHub projects
+const octokit = new Octokit({
+  auth: import.meta.env.GITHUB_TOKEN,
+});
+
+const featuredRepos = ["EveSunMaple/Frosti"];
+
+const projects = await Promise.all(
+  featuredRepos.map(async (repo) => {
+    const [owner, name] = repo.split("/");
+    try {
+      const { data } = await octokit.rest.repos.get({
+        owner,
+        repo: name,
+      });
+
+      return {
+        name: data.name,
+        description: data.description || "",
+        language: data.language,
+        stars: data.stargazers_count,
+        url: data.html_url,
+        homepage: data.homepage,
+        topics: data.topics || [],
+        features: [], // Add features manually or fetch from README
+        techStack: [], // Add tech stack manually or fetch from README
+        screenshots: [], // Add screenshots manually or fetch from repository
+      };
+    } catch (error) {
+      console.error(`Error fetching repo ${repo}:`, error);
+      return null;
+    }
+  }),
+).then((results) => results.filter(Boolean));
+---
+
+<Layout title="Home - SaroProck" description="A student who loves programming and technology">
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Header Section -->
+    <section class="text-center mb-16 animate-fade-in">
+      <div class="relative w-32 h-32 mx-auto mb-6 group">
+        <img
+          src="/profile.webp"
+          alt="SunMaple"
+          class="rounded-full shadow-lg group-hover:scale-105 transition-all duration-300"
+          width="128"
+          height="128"
+        />
+        <div
+          class="absolute inset-0 rounded-full bg-primary opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+        >
+        </div>
+      </div>
+      <h1
+        class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
+      >
+        SunMaple
+      </h1>
+      <p class="text-xl text-base-content/80 mb-6">
+        <span class="inline-block">意识到会不说再见地离别，</span>
+        <span class="inline-block">才学会珍惜生命的每一天。</span>
+      </p>
+
+      <!-- Social Links -->
+      <div class="flex justify-center gap-4">
+        {
+          socialLinks.map((link) => (
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="btn btn-ghost btn-circle"
+              aria-label={link.name}
+            >
+              <Icon name={link.icon} class="w-6 h-6" />
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="prose prose-lg max-w-2xl mb-16 mx-auto animate-fade-in">
+      <p>
+        我时常觉得自己很健忘：忘记了一些人和事，忘记了自己从哪里来、又要到哪里去。所以我给我自己写了一个博客、一个"不受控制"的博客、一个"只属于我"的博客，让我可以写点东西、记点东西，不至于把过去忘得一干二净。
+      </p>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold mb-8 flex items-center gap-2">
+        <Icon name="lucide:code" class="w-8 h-8" />
+        Featured Projects
+      </h2>
+      <div class="grid grid-cols-1 gap-8">
+        {projects.map((project) => <ProjectCard {...project} />)}
+      </div>
+    </section>
+
+    <!-- Recent Blog Posts -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold mb-8 flex items-center gap-2">
+        <Icon name="lucide:pen-tool" class="w-8 h-8" />
+        Recent Posts
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {
+          recentPosts.map((post) => (
+            <BlogCard
+              title={post.data.title}
+              description={post.data.description}
+              date={post.data.pubDate}
+              badges={post.data.badges}
+              categories={post.data.categories}
+              tags={post.data.tags}
+              thumbnail={post.data.featuredImage}
+              slug={post.slug}
+            />
+          ))
+        }
+      </div>
+
+      <div class="text-center mt-8">
+        <a href="/blog/1" class="btn btn-primary"> View All Posts </a>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .animate-fade-in {
+    animation: fadeIn 1s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

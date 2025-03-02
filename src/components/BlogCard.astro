@@ -1,0 +1,168 @@
+---
+import { format } from "date-fns";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  title: string;
+  description?: string;
+  date: Date;
+  categories?: string[];
+  tags?: string[];
+  badges?: string[];
+  readingTime?: number;
+  thumbnail?: string;
+  slug: string;
+}
+
+const { title, description, date, categories = [], tags = [], badges = [], readingTime, thumbnail, slug } = Astro.props;
+---
+
+<article class="blog-card group animate-fade-in" style={`--delay: ${Math.random() * 0.5}s`}>
+  <div
+    class="card bg-base-200/40 backdrop-blur-sm hover:bg-base-200/60 transition-all duration-300 overflow-hidden min-w-[280px] h-full"
+  >
+    <div transition:name=`image-${slug}` class="relative">
+      {
+        thumbnail && (
+          <a href={`/blog/${slug}`} class="block">
+            <div class="aspect-video overflow-hidden">
+              <img
+                src={thumbnail}
+                alt={title}
+                class="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
+                width="800"
+                height="400"
+              />
+            </div>
+          </a>
+        )
+      }
+
+      {/* Badge overlay on the image or top-right of card */}
+      {
+        badges && badges.length > 0 && (
+          <div class="absolute top-6 right-6 flex flex-col gap-2">
+            {badges.map((badge) => (
+              <div class="badge-bubble">
+                <span class="badge-text">{badge}</span>
+              </div>
+            ))}
+          </div>
+        )
+      }
+    </div>
+
+    <div class="card-body">
+      <h2
+        class="card-title text-xl font-bold line-clamp-2 hover:text-primary transition-colors"
+        transition:name=`title-${slug}`
+      >
+        <a href={`/blog/${slug}`}>{title}</a>
+      </h2>
+
+      {description && <p class="text-base-content/80 line-clamp-3 mt-2">{description}</p>}
+
+      <div class="card-meta mt-4 space-y-3">
+        <div class="flex items-center gap-2 text-sm text-base-content/70">
+          <time datetime={date.toISOString()}>
+            <Icon name="lucide:calendar" class="h-4 w-4 inline-block mr-1" />
+            {format(date, "MMMM d, yyyy")}
+          </time>
+          {
+            readingTime && (
+              <span class="reading-time">
+                <Icon name="lucide:clock" class="h-4 w-4 inline-block mr-1" />
+                {readingTime} min read
+              </span>
+            )
+          }
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          {
+            categories.map((category) => (
+              <a
+                href={`/category/${category.toLowerCase()}`}
+                class="badge badge-neutral gap-1 hover:scale-105 transition-transform duration-200"
+              >
+                <Icon name="lucide:folder" class="h-4 w-4" />
+                {category}
+              </a>
+            ))
+          }
+          {
+            tags.map((tag) => (
+              <a
+                href={`/tag/${tag.toLowerCase()}`}
+                class="badge badge-outline gap-1 hover:scale-105 transition-transform duration-200"
+              >
+                <Icon name="lucide:tag" class="h-4 w-4" />
+                {tag}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="card-actions justify-end mt-4">
+        <a href={`/blog/${slug}`} class="btn btn-ghost btn-sm transition-colors">
+          Read More
+          <Icon name="lucide:arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </a>
+      </div>
+    </div>
+  </div>
+</article>
+
+<style>
+  .blog-card {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-out forwards;
+    animation-delay: var(--delay);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .badge-bubble {
+    background: oklch(var(--s));
+    color: oklch(var(--sc));
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    animation: float 3s ease-in-out infinite;
+    transform-origin: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .badge-text {
+    transform: rotate(-10deg);
+    display: block;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-5px) rotate(5deg);
+    }
+  }
+</style>
