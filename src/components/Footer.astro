@@ -31,24 +31,33 @@ const socialLinks = [
   },
 ];
 
-const friendLinks = [
+const techStack = [
+  { name: "Astro", href: "https://astro.build", icon: "https://astro.build/favicon.svg" },
+  { name: "Tailwind CSS", href: "https://tailwindcss.com", icon: "https://tailwindcss.com/favicons/favicon.ico" },
+  { name: "daisyUI", href: "https://daisyui.com", icon: "https://daisyui.com/favicon.ico" },
+];
+
+const specialFriends = [
   {
     name: "Astro",
     description: "The web framework for content-driven websites",
     href: "https://astro.build",
     icon: "https://astro.build/favicon.svg",
   },
+];
+
+const otherFriends = [
   {
     name: "DaisyUI",
-    description: "The most popular component library for Tailwind CSS",
     href: "https://daisyui.com",
-    icon: "https://daisyui.com/favicon.ico",
+  },
+  {
+    name: "Swup",
+    href: "https://swup.js.org/",
   },
   {
     name: "Tailwind CSS",
-    description: "A utility-first CSS framework",
     href: "https://tailwindcss.com",
-    icon: "https://tailwindcss.com/favicons/favicon.ico",
   },
 ];
 ---
@@ -141,27 +150,51 @@ const friendLinks = [
       <Icon name="ri:links-line" class="h-5 w-5" />
       Friend Links
     </h3>
-    <div class="grid gap-4">
-      {
-        friendLinks.map((link) => (
-          <a
-            href={link.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="card bg-base-200/50 backdrop-blur-sm hover:bg-base-200 transition-colors duration-300"
-          >
-            <div class="card-body py-4">
-              <div class="flex items-center gap-3">
-                <img src={link.icon} alt={link.name} class="w-8 h-8 rounded" />
-                <div>
-                  <h4 class="font-medium">{link.name}</h4>
-                  <p class="text-sm text-base-content/70">{link.description}</p>
+    <div class="space-y-6">
+      <div>
+        <h4 class="text-md font-semibold mb-3">Special</h4>
+        <div class="grid gap-4">
+          {
+            specialFriends.map((link) => (
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="card bg-base-200/50 backdrop-blur-sm hover:bg-base-200 transition-all duration-300"
+              >
+                <div class="card-body py-4">
+                  <div class="flex items-center gap-3">
+                    <img src={link.icon} alt={link.name} class="w-8 h-8 rounded" />
+                    <div>
+                      <h5 class="font-medium">{link.name}</h5>
+                      <p class="text-sm text-base-content/70">{link.description}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </a>
-        ))
-      }
+              </a>
+            ))
+          }
+        </div>
+      </div>
+
+      <div>
+        <h4 class="text-md font-semibold mb-3">Other</h4>
+        <div>
+          {
+            otherFriends.map((link) => (
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-sm btn-outline m-2 text-base-content/80"
+              >
+                <Icon name="ri:external-link-line" class="h-4 w-4" />
+                {link.name}
+              </a>
+            ))
+          }
+        </div>
+      </div>
     </div>
     <div class="modal-action">
       <form method="dialog">

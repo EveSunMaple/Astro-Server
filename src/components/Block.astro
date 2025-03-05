@@ -1,0 +1,64 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  type?: "info" | "warning" | "success" | "error" | "tip";
+  title?: string;
+  collapsible?: boolean;
+  defaultOpen?: boolean;
+}
+
+const { type, title, collapsible = false, defaultOpen = true } = Astro.props;
+
+const icons = {
+  info: "lucide:info",
+  warning: "lucide:alert-triangle",
+  success: "lucide:check-circle",
+  error: "lucide:x-circle",
+  tip: "lucide:lightbulb",
+};
+
+const colors = {
+  info: "info",
+  warning: "warning",
+  success: "success",
+  error: "error",
+  tip: "accent",
+};
+
+const emojis = {
+  info: "ℹ️",
+  warning: "⚠️",
+  success: "✅",
+  error: "❌",
+  tip: "💡",
+};
+---
+
+{
+  collapsible ? (
+    <details class="collapse bg-base-200 mb-4" open={defaultOpen}>
+      <summary class="collapse-title font-medium flex items-center gap-2">
+        {type && <Icon name={icons[type]} class={`w-5 h-5 text-${colors[type]}`} />}
+        {title || "Details"}
+      </summary>
+      <div class="collapse-content prose">
+        <slot />
+      </div>
+    </details>
+  ) : type ? (
+    <div class={`alert alert-${colors[type]} mb-4`}>
+      <Icon name={icons[type]} class="w-5 h-5" />
+      <div class="flex-1">
+        {title && <h3 class="font-bold">{title}</h3>}
+        <div class="prose">
+          <slot />
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div class="prose">
+      <slot />
+    </div>
+  )
+}
